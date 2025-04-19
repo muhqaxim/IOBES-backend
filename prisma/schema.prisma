@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String               @id @default(auto()) @map("_id") @db.ObjectId
+  email         String               @unique
+  password      String
+  name          String
+  role          Role                 @default(FACULTY)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  contents      Content[]
+  facultyCourses FacultyCourseAssignment[]
+}
+
+enum Role {
+  ADMIN
+  FACULTY
+}
+
+model Course {
+  id            String               @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  code          String               @unique
+  description   String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  clos          CLO[]
+  contents      Content[]
+  facultyAssignments FacultyCourseAssignment[]
+}
+
+// Explicit relation model for the many-to-many relationship
+model FacultyCourseAssignment {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  facultyId     String    @db.ObjectId
+  courseId      String    @db.ObjectId
+  assignedAt    DateTime  @default(now())
+  faculty       User      @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  course        Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([facultyId, courseId])
+}
+
+model CLO {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  description   String
+  number        Int
+  courseId      String    @db.ObjectId
+  course        Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum ContentType {
+  QUIZ
+  ASSIGNMENT
+  EXAM
+}
+
+model Content {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  type          ContentType
+  questions     Json        // Store questions, options, answers
+  courseId      String      @db.ObjectId
+  course        Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  facultyId     String      @db.ObjectId
+  faculty       User        @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
