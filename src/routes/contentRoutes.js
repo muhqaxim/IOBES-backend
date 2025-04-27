@@ -7,7 +7,7 @@ const { authenticate } = require("../middleware/auth");
 router.use(authenticate);
 
 // Get all content created by the faculty
-router.get("/", contentController.getAllContentByFaculty);
+router.get("/", contentController.getAllContent);
 
 // Get specific content by ID (faculty-owned)
 router.get("/:id", contentController.getContentById);
@@ -22,6 +22,6 @@ router.put("/:id", contentController.updateContent);
 router.delete("/:id", contentController.deleteContent);
 
 // Generate content via AI only (for preview or manual use)
-router.post("/generate/ai", contentController.generateContentAI);
+// router.post("/generate/ai", contentController.);
 
 module.exports = router;

@@ -3,7 +3,7 @@ const router = express.Router();
 const cloController = require("../controllers/cloController");
 
 // Get all CLOs for a course
-router.get("/course/:courseId", cloController.getCLOsByCourse);
+router.get("/course/:courseId", cloController.getCLOById);
 
 // Create a new CLO
 router.post("/", cloController.createCLO);

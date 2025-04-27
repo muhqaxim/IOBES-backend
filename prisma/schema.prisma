@@ -32,9 +32,9 @@ model User {
   role           Role                      @default(FACULTY)
   createdAt      DateTime                  @default(now())
   updatedAt      DateTime                  @updatedAt
-  contents       Content[]
-  facultyCourses FacultyCourseAssignment[]
-  ActivityLog    ActivityLog[]
+  contents       Content[] // One-to-many relation to Content
+  facultyCourses FacultyCourseAssignment[] // One-to-many relation to FacultyCourseAssignment
+  ActivityLog    ActivityLog[] // One-to-many relation to ActivityLog
 }
 
 model Course {
@@ -44,9 +44,11 @@ model Course {
   description        String?
   createdAt          DateTime                  @default(now())
   updatedAt          DateTime                  @updatedAt
-  clos               CLO[]
-  contents           Content[]
-  facultyAssignments FacultyCourseAssignment[]
+  clos               CLO[] // One-to-many relation to CLO
+  contents           Content[] // One-to-many relation to Content
+  facultyAssignments FacultyCourseAssignment[] // One-to-many relation to FacultyCourseAssignment
+  departmentId       String // Assuming a departmentId for each course
+  department         Department                @relation(fields: [departmentId], references: [id]) // Assuming Department model exists
 }
 
 model FacultyCourseAssignment {
@@ -57,7 +59,7 @@ model FacultyCourseAssignment {
   faculty    User     @relation(fields: [facultyId], references: [id], onDelete: Cascade)
   course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  @@unique([facultyId, courseId])
+  @@unique([facultyId, courseId]) // Unique constraint to ensure faculty can't be assigned the same course twice
 }
 
 model CLO {
@@ -65,7 +67,7 @@ model CLO {
   description String
   number      Int
   courseId    String   @db.ObjectId
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade) // Many-to-one relation to Course
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -76,9 +78,9 @@ model Content {
   type      ContentType
   questions Json
   courseId  String      @db.ObjectId
-  course    Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course    Course      @relation(fields: [courseId], references: [id], onDelete: Cascade) // Many-to-one relation to Course
   facultyId String      @db.ObjectId
-  faculty   User        @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  faculty   User        @relation(fields: [facultyId], references: [id], onDelete: Cascade) // Many-to-one relation to User (faculty)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }
@@ -90,4 +92,12 @@ model ActivityLog {
   action    String
   metadata  Json?
   createdAt DateTime @default(now())
+}
+
+model Department {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  courses   Course[] // One-to-many relation to Course
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

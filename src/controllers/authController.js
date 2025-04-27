@@ -15,11 +15,7 @@ const register = async (req, res) => {
     }
 
     // Optional: Only ADMIN can create another ADMIN
-    if (role === "ADMIN" && req.user?.role !== "ADMIN") {
-      return res
-        .status(403)
-        .json({ message: "Only admins can create admin users" });
-    }
+   
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
