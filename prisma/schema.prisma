@@ -41,6 +41,7 @@ model Course {
   id                 String                    @id @default(auto()) @map("_id") @db.ObjectId
   name               String
   code               String                    @unique
+  creditHours        Int
   description        String?
   createdAt          DateTime                  @default(now())
   updatedAt          DateTime                  @updatedAt
@@ -79,6 +80,7 @@ model Content {
   course    Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
   facultyId String      @db.ObjectId
   faculty   User        @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  cloIds    String[]    @db.ObjectId
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }
