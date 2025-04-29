@@ -1,4 +1,3 @@
-const { generateAssessmentPrompt } = require("../utils/generateAssessmentPrompt");
 const { generateContent } = require("../services/generateContentService");
 
 const generateAssessment = async (req, res) => {

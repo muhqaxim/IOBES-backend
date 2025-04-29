@@ -7,6 +7,7 @@ const facultyRoutes = require("./src/routes/facultyRoutes");
 const contentRoutes = require("./src/routes/contentRoutes");
 const cloRoutes = require("./src/routes/cloRoutes");
 const geminiRoutes = require("./src/routes/geminiRoutes");
+const courseRoutes = require("./src/routes/courseRoutes");
 const { generateAssessment } = require('./src/controllers/assessmentController');
 
 const app = express();
@@ -21,7 +22,9 @@ app.use("/api/content", contentRoutes);
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/clo", cloRoutes);
 app.use("/api/gemini", geminiRoutes);
-router.post('/api/assessment', generateAssessment);
+app.use("/api/courses", courseRoutes);
+// router.post('/api/assessment', generateAssessment);
+app.post('/api/assessment', generateAssessment);
 
 // Root route
 app.get("/", (req, res) => {
