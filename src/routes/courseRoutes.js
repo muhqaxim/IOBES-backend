@@ -9,5 +9,6 @@ router.put("/:id", courseController.updateCourse);
 router.delete("/:id", courseController.deleteCourse);
 router.post("/assign-faculty", courseController.assignFacultyToCourse);
 router.post("/remove-faculty", courseController.removeFacultyFromCourse);
+router.get("/faculty/:facultyId", courseController.getCourseByFaculty);
 
 module.exports = router;
