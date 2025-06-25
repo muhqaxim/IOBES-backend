@@ -1,271 +1,359 @@
-const prisma = require("../config/db");
+// const prisma = require("../config/db");
 
-// Placeholder for AI service
-const generateContentWithAI = async (type, courseId) => {
-  const templates = {
-    QUIZ: {
-      questions: [
-        {
-          question: "Sample question 1?",
-          options: ["Option A", "Option B", "Option C", "Option D"],
-          answer: "Option A",
-        },
-        {
-          question: "Sample question 2?",
-          options: ["Option A", "Option B", "Option C", "Option D"],
-          answer: "Option C",
-        },
-      ],
-    },
-    ASSIGNMENT: {
-      questions: [
-        {
-          question: "Assignment task 1",
-          points: 50,
-        },
-        {
-          question: "Assignment task 2",
-          points: 50,
-        },
-      ],
-    },
-    EXAM: {
-      questions: [
-        {
-          question: "Exam question 1?",
-          points: 20,
-          options: ["Option A", "Option B", "Option C", "Option D"],
-          answer: "Option B",
-        },
-        {
-          question: "Exam question 2?",
-          points: 20,
-          options: ["Option A", "Option B", "Option C", "Option D"],
-          answer: "Option D",
-        },
-        {
-          question: "Exam essay question",
-          points: 60,
-          type: "essay",
-        },
-      ],
-    },
-  };
+// // Placeholder for AI service
+// const generateContentWithAI = async (type, courseId) => {
+//   const templates = {
+//     QUIZ: {
+//       questions: [
+//         {
+//           question: "Sample question 1?",
+//           options: ["Option A", "Option B", "Option C", "Option D"],
+//           answer: "Option A",
+//         },
+//         {
+//           question: "Sample question 2?",
+//           options: ["Option A", "Option B", "Option C", "Option D"],
+//           answer: "Option C",
+//         },
+//       ],
+//     },
+//     ASSIGNMENT: {
+//       questions: [
+//         {
+//           question: "Assignment task 1",
+//           points: 50,
+//         },
+//         {
+//           question: "Assignment task 2",
+//           points: 50,
+//         },
+//       ],
+//     },
+//     EXAM: {
+//       questions: [
+//         {
+//           question: "Exam question 1?",
+//           points: 20,
+//           options: ["Option A", "Option B", "Option C", "Option D"],
+//           answer: "Option B",
+//         },
+//         {
+//           question: "Exam question 2?",
+//           points: 20,
+//           options: ["Option A", "Option B", "Option C", "Option D"],
+//           answer: "Option D",
+//         },
+//         {
+//           question: "Exam essay question",
+//           points: 60,
+//           type: "essay",
+//         },
+//       ],
+//     },
+//   };
 
-  return templates[type];
-};
+//   return templates[type];
+// };
 
-const getAllContentByFaculty = async (req, res) => {
+// const getAllContentByFaculty = async (req, res) => {
+//   try {
+//     const facultyId = req.user.id;
+
+//     const contents = await prisma.content.findMany({
+//       where: { facultyId },
+//       include: {
+//         course: {
+//           select: {
+//             id: true,
+//             name: true,
+//             code: true,
+//           },
+//         },
+//       },
+//     });
+
+//     res.status(200).json(contents);
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
+
+// const getContentById = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const facultyId = req.user.id;
+
+//     const content = await prisma.content.findFirst({
+//       where: {
+//         id,
+//         facultyId,
+//       },
+//       include: {
+//         course: {
+//           select: {
+//             id: true,
+//             name: true,
+//             code: true,
+//           },
+//         },
+//       },
+//     });
+
+//     if (!content) {
+//       return res
+//         .status(404)
+//         .json({ message: "Content not found or unauthorized" });
+//     }
+
+//     res.status(200).json(content);
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
+
+// const createContent = async (req, res) => {
+//   try {
+//     const { title, type, courseId, autoGenerate } = req.body;
+//     const facultyId = req.user.id;
+
+//     // Check if course exists and faculty is assigned to it
+//     const course = await prisma.course.findFirst({
+//       where: {
+//         id: courseId,
+//         faculty: {
+//           some: {
+//             id: facultyId,
+//           },
+//         },
+//       },
+//     });
+
+//     if (!course) {
+//       return res
+//         .status(404)
+//         .json({ message: "Course not found or not assigned to you" });
+//     }
+
+//     // Generate content with AI if requested
+//     let questions = req.body.questions;
+//     if (autoGenerate) {
+//       questions = await generateContentWithAI(type, courseId);
+//     }
+
+//     // Create content
+//     const content = await prisma.content.create({
+//       data: {
+//         title,
+//         type,
+//         questions,
+//         courseId,
+//         facultyId,
+//       },
+//     });
+
+//     res.status(200).json({
+//       message: "Content created successfully",
+//       content,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
+
+// const updateContent = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { title, questions } = req.body;
+//     const facultyId = req.user.id;
+
+//     // Check if content exists and belongs to the faculty
+//     const existingContent = await prisma.content.findFirst({
+//       where: {
+//         id,
+//         facultyId,
+//       },
+//     });
+
+//     if (!existingContent) {
+//       return res
+//         .status(404)
+//         .json({ message: "Content not found or unauthorized" });
+//     }
+
+//     // Update content
+//     const content = await prisma.content.update({
+//       where: { id },
+//       data: {
+//         title,
+//         questions,
+//       },
+//     });
+
+//     res.status(200).json({
+//       message: "Content updated successfully",
+//       content,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
+
+// const deleteContent = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const facultyId = req.user.id;
+
+//     // Check if content exists and belongs to the faculty
+//     const existingContent = await prisma.content.findFirst({
+//       where: {
+//         id,
+//         facultyId,
+//       },
+//     });
+
+//     if (!existingContent) {
+//       return res
+//         .status(404)
+//         .json({ message: "Content not found or unauthorized" });
+//     }
+
+//     // Delete content
+//     await prisma.content.delete({ where: { id } });
+
+//     res.status(200).json({ message: "Content deleted successfully" });
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
+
+// const generateContentAI = async (req, res) => {
+//   try {
+//     const { type, courseId } = req.body;
+//     const facultyId = req.user.id;
+
+//     // Check if course exists and faculty is assigned to it
+//     const course = await prisma.course.findFirst({
+//       where: {
+//         id: courseId,
+//         faculty: {
+//           some: {
+//             id: facultyId,
+//           },
+//         },
+//       },
+//     });
+
+//     if (!course) {
+//       return res
+//         .status(404)
+//         .json({ message: "Course not found or not assigned to you" });
+//     }
+
+//     // Generate content with AI
+//     const generatedContent = await generateContentWithAI(type, courseId);
+
+//     res.status(200).json({
+//       message: "Content generated successfully",
+//       content: generatedContent,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
+
+// module.exports = {
+//   getAllContentByFaculty,
+//   getContentById,
+//   createContent,
+//   updateContent,
+//   deleteContent,
+//   generateContentAI,
+// };
+
+// controllers/contentController.js
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+// Create Content (Assignment, Quiz, Exam)
+exports.createContent = async (req, res) => {
   try {
-    const facultyId = req.user.id;
+    const { title, type, questions, courseId, cloIds, facultyId } = req.body;
 
-    const contents = await prisma.content.findMany({
-      where: { facultyId },
-      include: {
-        course: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
-          },
-        },
-      },
-    });
-
-    res.status(200).json(contents);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-const getContentById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const facultyId = req.user.id;
-
-    const content = await prisma.content.findFirst({
-      where: {
-        id,
-        facultyId,
-      },
-      include: {
-        course: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
-          },
-        },
-      },
-    });
-
-    if (!content) {
-      return res
-        .status(404)
-        .json({ message: "Content not found or unauthorized" });
-    }
-
-    res.status(200).json(content);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-const createContent = async (req, res) => {
-  try {
-    const { title, type, courseId, autoGenerate } = req.body;
-    const facultyId = req.user.id;
-
-    // Check if course exists and faculty is assigned to it
-    const course = await prisma.course.findFirst({
-      where: {
-        id: courseId,
-        faculty: {
-          some: {
-            id: facultyId,
-          },
-        },
-      },
-    });
-
-    if (!course) {
-      return res
-        .status(404)
-        .json({ message: "Course not found or not assigned to you" });
-    }
-
-    // Generate content with AI if requested
-    let questions = req.body.questions;
-    if (autoGenerate) {
-      questions = await generateContentWithAI(type, courseId);
-    }
-
-    // Create content
     const content = await prisma.content.create({
       data: {
         title,
         type,
         questions,
         courseId,
+        cloIds,
         facultyId,
       },
     });
 
-    res.status(200).json({
-      message: "Content created successfully",
-      content,
-    });
+    res.status(201).json(content);
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error('Create Content Error:', error);
+    res.status(500).json({ message: 'Failed to create content', error });
   }
 };
 
-const updateContent = async (req, res) => {
+// Get All Content by Course ID and Faculty ID
+exports.getContentByCourseAndFaculty = async (req, res) => {
+  const { courseId, facultyId } = req.params;
   try {
-    const { id } = req.params;
-    const { title, questions } = req.body;
-    const facultyId = req.user.id;
-
-    // Check if content exists and belongs to the faculty
-    const existingContent = await prisma.content.findFirst({
+    const contents = await prisma.content.findMany({
       where: {
-        id,
+        courseId,
         facultyId,
       },
+      include: {
+        course: true,
+      },
     });
+    res.json(contents);
+  } catch (error) {
+    console.error('Fetch Content Error:', error);
+    res.status(500).json({ message: 'Failed to fetch contents' });
+  }
+};
 
-    if (!existingContent) {
-      return res
-        .status(404)
-        .json({ message: "Content not found or unauthorized" });
-    }
+// Get All Content by Faculty ID (no course filter)
+exports.getContentByFaculty = async (req, res) => {
+  const { facultyId } = req.params;
+  try {
+    const contents = await prisma.content.findMany({
+      where: {
+        facultyId,
+      },
+      include: {
+        course: true,
+      },
+    });
+    res.json(contents);
+  } catch (error) {
+    console.error('Fetch Faculty Content Error:', error);
+    res.status(500).json({ message: 'Failed to fetch faculty content' });
+  }
+};
 
-    // Update content
-    const content = await prisma.content.update({
+// Get Single Content by ID
+exports.getContentById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const content = await prisma.content.findUnique({
       where: { id },
-      data: {
-        title,
-        questions,
+      include: {
+        course: true,
       },
     });
 
-    res.status(200).json({
-      message: "Content updated successfully",
-      content,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-const deleteContent = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const facultyId = req.user.id;
-
-    // Check if content exists and belongs to the faculty
-    const existingContent = await prisma.content.findFirst({
-      where: {
-        id,
-        facultyId,
-      },
-    });
-
-    if (!existingContent) {
-      return res
-        .status(404)
-        .json({ message: "Content not found or unauthorized" });
+    if (!content) {
+      return res.status(404).json({ message: 'Content not found' });
     }
 
-    // Delete content
-    await prisma.content.delete({ where: { id } });
-
-    res.status(200).json({ message: "Content deleted successfully" });
+    res.json(content);
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error('Fetch Single Content Error:', error);
+    res.status(500).json({ message: 'Failed to fetch content' });
   }
-};
-
-const generateContentAI = async (req, res) => {
-  try {
-    const { type, courseId } = req.body;
-    const facultyId = req.user.id;
-
-    // Check if course exists and faculty is assigned to it
-    const course = await prisma.course.findFirst({
-      where: {
-        id: courseId,
-        faculty: {
-          some: {
-            id: facultyId,
-          },
-        },
-      },
-    });
-
-    if (!course) {
-      return res
-        .status(404)
-        .json({ message: "Course not found or not assigned to you" });
-    }
-
-    // Generate content with AI
-    const generatedContent = await generateContentWithAI(type, courseId);
-
-    res.status(200).json({
-      message: "Content generated successfully",
-      content: generatedContent,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-module.exports = {
-  getAllContentByFaculty,
-  getContentById,
-  createContent,
-  updateContent,
-  deleteContent,
-  generateContentAI,
 };

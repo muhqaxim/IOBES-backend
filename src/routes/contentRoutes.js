@@ -1,27 +1,18 @@
-const express = require("express");
+// routes/contentRoutes.js
+const express = require('express');
 const router = express.Router();
-const contentController = require("../controllers/contentController");
-const { authenticate } = require("../middleware/auth");
+const contentController = require('../controllers/contentController');
 
-// All routes require authentication
-router.use(authenticate);
+// Create new content (Assignment, Quiz, Exam)
+router.post('/', contentController.createContent);
 
-// Get all content created by the faculty
-router.get("/", contentController.getAllContentByFaculty);
+// Get all content by course ID and faculty ID
+router.get('/course/:courseId/faculty/:facultyId', contentController.getContentByCourseAndFaculty);
 
-// Get specific content by ID (faculty-owned)
-router.get("/:id", contentController.getContentById);
+// Get all content by faculty ID only
+router.get('/faculty/:facultyId', contentController.getContentByFaculty);
 
-// Create new content (optionally auto-generating)
-router.post("/", contentController.createContent);
-
-// Update existing content
-router.put("/:id", contentController.updateContent);
-
-// Delete content
-router.delete("/:id", contentController.deleteContent);
-
-// Generate content via AI only (for preview or manual use)
-router.post("/generate/ai", contentController.generateContentAI);
+// Get single content by ID
+router.get('/:id', contentController.getContentById);
 
 module.exports = router;
