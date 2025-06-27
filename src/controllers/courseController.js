@@ -178,22 +178,30 @@ const updateCourse = async (req, res) => {
 
 const deleteCourse = async (req, res) => {
   try {
-    const { id } = req.params;
+    let { id } = req.params; // `id` should already be a string
 
-    const course = await prisma.course.findUnique({ where: { id: parseInt(id) } });
+    // Ensure the ID is a string
+    id = String(id);
+
+    // Find the course by string ID (no need to parseInt here)
+    const course = await prisma.course.findUnique({ where: { id } });
+
     if (!course) return res.status(404).json({ message: "Course not found" });
 
+    // Proceed with deleting related content and the course
     await prisma.$transaction([
-      prisma.cLO.deleteMany({ where: { courseId: parseInt(id) } }),
-      prisma.facultyCourseAssignment.deleteMany({ where: { courseId: parseInt(id) } }),
-      prisma.course.delete({ where: { id: parseInt(id) } }),
+      prisma.cLO.deleteMany({ where: { courseId: id } }),
+      prisma.facultyCourseAssignment.deleteMany({ where: { courseId: id } }),
+      prisma.course.delete({ where: { id } }),
     ]);
 
     res.status(200).json({ message: "Course deleted successfully" });
   } catch (error) {
+    console.error("Error deleting course:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 const assignFacultyToCourse = async (req, res) => {
   try {

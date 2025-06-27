@@ -15,4 +15,6 @@ router.get('/faculty/:facultyId', contentController.getContentByFaculty);
 // Get single content by ID
 router.get('/:id', contentController.getContentById);
 
+router.delete('/:id', contentController.deleteContent); // New route to handle DELETE
+
 module.exports = router;
